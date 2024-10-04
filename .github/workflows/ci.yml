@@ -1,17 +1,31 @@
-name: CI # Contihuos Integration
+name: CI
 
 on:
   push:
-    branches: ['main']
+    branches: [ "main" ]
   pull_request:
-    branches: ['main']
+    branches: [ "main" ]
 
 env:
   CARGO_TERM_COLOR: always
+  DATABASE_URL: postgres://postgres:dummy@localhost:5432/trading
 
 jobs:
   api-checks:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: dummy
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v3
       - name: Install Protoc
@@ -26,11 +40,15 @@ jobs:
         env:
           SQLX_OFFLINE: true
         run: cargo clippy --all-targets --all-features -- -Dclippy::all -D warnings
+      - name: Setup database
+        working-directory: ./api
+        run: |
+          cargo install sqlx-cli --no-default-features --features postgres
+          sqlx database create
+          sqlx migrate run
       - name: Run tests
         working-directory: ./api
         run: cargo test --verbose
-        env:
-          SQLX_OFFLINE: true
 
   webapp-checks:
     runs-on: ubuntu-latest
