@@ -29,6 +29,8 @@ jobs:
       - name: Run tests
         working-directory: ./api
         run: cargo test --verbose
+        env:
+          SQLX_OFFLINE: true
 
   webapp-checks:
     runs-on: ubuntu-latest
