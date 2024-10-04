@@ -1,0 +1,38 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT quantity, stock_id, s.symbol as stock_symbol, s.name as stock_name\nFROM positions\nJOIN stocks s\nON positions.stock_id = s.id;",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "quantity",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "stock_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "stock_symbol",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "stock_name",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "15d14b1c281bfdb8d36c56270c75a700c853511c2a0a962bec611daa4ecb4df8"
+}

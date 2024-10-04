@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "WITH trade (stock_id, quantity) as (\n    VALUES ($1::INT, $2::INT)\n),\nupserted as (\n    UPDATE positions p\n    SET quantity = p.quantity + trade.quantity\n    FROM trade\n    WHERE trade.stock_id = p.stock_id\n    RETURNING p.*\n)\nINSERT INTO positions (stock_id, quantity)\nSELECT stock_id,\n    quantity\nFROM trade\n    JOIN stocks ON trade.stock_id = stocks.id\nWHERE NOT EXISTS (\n        SELECT 1\n        FROM upserted\n        WHERE upserted.stock_id = trade.stock_id\n    ) ON CONFLICT (stock_id) DO NOTHING;",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "b902e325a6faf301a20ce50191d73732395a2ead0e0bef45c11bdb3120642db0"
+}
